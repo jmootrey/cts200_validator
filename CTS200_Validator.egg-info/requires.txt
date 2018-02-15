@@ -1,0 +1,7 @@
+sqlite3
+paramiko
+socket
+configparser
+time
+pathlib
+gi
