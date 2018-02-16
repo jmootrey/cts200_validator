@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sqlite3
+import subprocess
 import paramiko
 import socket
 import configparser
@@ -183,9 +184,14 @@ class Handler:
         cfg['DATABASE']['file'] = self.filename
         self.dbfile = Path(cfg['DATABASE']['file'])
         if self.dbfile.is_file():
-            self.db_colorbox.set_rgba(Gdk.RGBA(0,0.8,0,1))
-            with open('.config/config.ini', 'w') as self.configfile:
-                cfg.write(self.configfile)
+            self.t = subprocess.check_output(['file', '-b', self.filename])
+            self.t = self.t.decode('UTF-8')
+            if self.t == 'SQLite 3.x database\n':
+                self.db_colorbox.set_rgba(Gdk.RGBA(0,0.8,0,1))
+                with open('.config.ini', 'w') as self.configfile:
+                    cfg.write(self.configfile)
+            else:
+                self.error_message('Not A CTS200 Database File\nConfiguration NOT updated')
         file_open.hide()
         
 
@@ -197,7 +203,7 @@ if __name__ == '__main__':
     builder = Gtk.Builder()
     builder.add_from_file('main.glade')
     cfg = configparser.ConfigParser()
-    cfg.read('.config/config.ini')
+    cfg.read('.config.ini')
     builder.connect_signals(Handler())
     window = builder.get_object("main_window")
     error_dialog = builder.get_object("error_dialog")
