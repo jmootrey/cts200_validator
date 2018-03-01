@@ -15,10 +15,11 @@ from gi.repository import Gtk, Gdk
 class Handler:
 
     def __init__(self):
+        self.store = Gtk.ListStore(str)
         self.validate_button = builder.get_object('validate_button')
         self.message_dialog = builder.get_object('message_dialog')
         self.order_entry = builder.get_object('order_entry')
-        self.customer_entry = builder.get_object('customer_entry')
+        self.customer_entry = builder.get_object('customer_entry1')
         self.lot_entry = builder.get_object('lot_entry')
         self.ip_entry = builder.get_object('ip_entry')
         self.db_colorbox = builder.get_object('db_colorbox')
@@ -27,7 +28,15 @@ class Handler:
         self.md5_colorbox = builder.get_object('md5_colorbox')
         self.version_colorbox = builder.get_object('version_colorbox')
         self.dbfile = Path(cfg['DATABASE']['file'])
+        self.customer_model = builder.get_object('customer_model')
         if self.dbfile.is_file():
+            self.sq_conn = sqlite3.connect(str(self.dbfile))
+            self.c = self.sq_conn.cursor()
+            self.c.execute("SELECT customer FROM cts;")
+            self.customers = self.c.fetchall()
+            self.customer_model.clear()
+            for self.item in self.customers:
+                self.customer_model.append(self.item)
             db_colorbox = builder.get_object('db_colorbox')
             db_colorbox.set_rgba(Gdk.RGBA(0,0.8,0,1))
         
@@ -126,7 +135,7 @@ class Handler:
         # Reset Indicators
         self.reset_indicators()
         self.order_text = self.order_entry.get_text()
-        self.customer_text = self.customer_entry.get_text()
+        self.customer_text = self.customer_model[self.customer_entry.get_active()][0]
         self.lot_text = self.lot_entry.get_text()
         if not self.order_text:
             # call error
@@ -186,8 +195,15 @@ class Handler:
         if self.dbfile.is_file():
             self.t = subprocess.check_output(['file', '-b', self.filename])
             self.t = self.t.decode('UTF-8')
-            if self.t == 'SQLite 3.x database\n':
-                self.db_colorbox.set_rgba(Gdk.RGBA(0,0.8,0,1))
+            if 'SQLite 3.x database' in self.t:
+                self.sq_conn = sqlite3.connect(str(self.dbfile))
+                self.c = self.sq_conn.cursor()
+                self.c.execute("SELECT customer FROM cts;")
+                self.customers = self.c.fetchall()
+                self.customer_model.clear()
+                for self.item in self.customers:
+                    self.customer_model.append(self.item)
+                    self.db_colorbox.set_rgba(Gdk.RGBA(0,0.8,0,1))
                 with open('.config.ini', 'w') as self.configfile:
                     cfg.write(self.configfile)
             else:
