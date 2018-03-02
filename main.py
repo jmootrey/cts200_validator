@@ -56,10 +56,14 @@ class Handler:
 
     def get_remote_data(self, ip):
         self.d = {}
-        self.s = paramiko.SSHClient()
-        self.s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        self.s.connect(hostname=ip, port=22, username='emteq',
-            password='Q3tm36170')
+        try:
+            self.s = paramiko.SSHClient()
+            self.s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            self.s.connect(hostname=ip, port=22, username='emteq',
+                password='Q3tm36170')
+        except:
+            self.error_message('Secure Shell Connection Error')
+            return False
         self.stdin, self.ecmd5, self.stderr = self.s.exec_command("md5sum /opt/eConnect/App/econapp | cut -d ' ' -f1 | tr -d %'\n'")
         self.stdin2, self.dbmd5, self.stderr2 = self.s.exec_command("md5sum /opt/database/database.tgz | cut -d ' ' -f1 | tr -d %'\n'")
         self.stdin3, self.ver, self.stderr3 = self.s.exec_command("/opt/eConnect/scripts/misc/ecms-versions.sh")
@@ -70,25 +74,29 @@ class Handler:
         else:
             self.d['ecmd5'] = 'Error'
             self.error_message('Error Retreiving EC MD5 Hash')
+            return
         if self.dbmd5.channel.recv_exit_status() == 0:
             self.d['dbmd5'] = self.dbmd5.readline()
         else:
             self.d['dbmd5'] = 'Error'
             self.error_message('Error Retreiving DB MD5 Hash')
+            return
         if self.ver.channel.recv_exit_status() == 0:
             self.d['version'] = self.ver.readlines()
         else:
             self.d['version'] = 'Error'
             self.error_message('Error Retreiving Version Data')
+            return
         return self.d
     
     def error_message(self, msg):
         error_dialog.format_secondary_text(msg)
         error_dialog.show_all()
+        self.reset_indicators()
+        self.validate_button.set_sensitive(False)
         return
 
     def validate_clicked(self, *args):
-
         self.c = 0
         while True:
             self.result = self.check_socket(dbdata[1])
@@ -97,29 +105,38 @@ class Handler:
                 self.ip_colorbox.set_rgba(Gdk.RGBA(0,0.8,0,1))
                 self.cts_colorbox.set_rgba(Gdk.RGBA(0,0.8,0,1))
                 break
-            if self.c >= 10:
-                # raise error
+            if self.c >= 1:
+                # raise error 1432
+                self.ip_colorbox.set_rgba(Gdk.RGBA(0.64,0,0,1))
+                self.cts_colorbox.set_rgba(Gdk.RGBA(0.64,0,0,1))
                 self.error_message('Unable To Locate CTS')
                 return
         self.remote_data = self.get_remote_data(dbdata[1])
-        if self.remote_data['version'] != 'Error':
-            self.version_colorbox.set_rgba(Gdk.RGBA(0,0.8,0,1))
-        if 'Error' not in self.remote_data.values():
-            if self.validate(self.remote_data):
-                #commit to record
-                self.create_record(self.remote_data)
-                self.message_dialog.show_all()
-               # self.reset_indicators()
+        if self.remote_data:
+            if self.remote_data['version'] != 'Error':
+                self.version_colorbox.set_rgba(Gdk.RGBA(0,0.8,0,1))
+            if 'Error' not in self.remote_data.values():
+                if self.validate(self.remote_data):
+                    #commit to record
+                    self.create_record(self.remote_data)
+                    self.message_dialog.show_all()
+                    return
+                else:
+                    self.error_message('Fail!\nMD5 Hash Match Error')
+                    
+            else:
+                self.error_message('Fail!\nUnable to Generate Remote MD5')
+                
                 return
         else:
-            self.error_message('MD5 Error')
             return
-        
     def validate(self, data):
         if data['ecmd5'] == dbdata[2]:
             if data['dbmd5'] == dbdata[3]:
                 self.md5_colorbox.set_rgba(Gdk.RGBA(0,0.8,0,1))
                 return True
+            else:
+                return False
         else:
             return False
         
@@ -148,6 +165,17 @@ class Handler:
             dbdata = self.get_local_data(self.customer_text, self.dbfile)
             if dbdata:
                 self.ip_entry.set_text(dbdata[1])
+                self.c = 0
+                while True:
+                    self.result = self.check_socket(dbdata[1])
+                    self.c += 1
+                    if self.result:
+                        self.ip_colorbox.set_rgba(Gdk.RGBA(0,0.8,0,1))
+                        self.cts_colorbox.set_rgba(Gdk.RGBA(0,0.8,0,1))
+                        break
+                    if self.c >= 1:
+                        # raise error 1432
+                        break
                 self.validate_button.set_sensitive(True)
             else:
                 self.ip_entry.set_text('')

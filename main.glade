@@ -152,8 +152,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="halign">end</property>
-                    <property name="margin_right">9</property>
-                    <property name="margin_bottom">7</property>
+                    <property name="margin_right">12</property>
+                    <property name="margin_bottom">1</property>
                     <property name="layout_style">end</property>
                     <child>
                       <object class="GtkButton" id="scan_button">
@@ -202,7 +202,6 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="model">customer_model</property>
-                        <property name="has_frame">False</property>
                         <property name="has_entry">True</property>
                         <property name="entry_text_column">0</property>
                         <signal name="changed" handler="customer_entry_changed" swapped="no"/>
@@ -308,18 +307,8 @@
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
+                <property name="padding">5</property>
                 <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSeparator" id="separator1">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
               </packing>
             </child>
             <child>
@@ -350,7 +339,7 @@
                         <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="margin_left">34</property>
+                        <property name="margin_left">20</property>
                         <property name="rgba">rgb(164,0,0)</property>
                       </object>
                       <packing>
@@ -389,12 +378,12 @@
                         <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="margin_left">29</property>
+                        <property name="margin_left">15</property>
                         <property name="rgba">rgb(164,0,0)</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="fill">True</property>
+                        <property name="fill">False</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
@@ -554,6 +543,7 @@
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
+                <property name="padding">5</property>
                 <property name="position">2</property>
               </packing>
             </child>
