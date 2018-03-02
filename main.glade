@@ -132,6 +132,7 @@
                       <object class="GtkEntry" id="order_entry">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <signal name="changed" handler="customer_entry_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>

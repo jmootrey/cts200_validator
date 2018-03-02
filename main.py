@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import signal
+import sys
 import sqlite3
 import subprocess
 import paramiko
@@ -10,7 +12,15 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk
 
-
+#########################################################
+#
+# CTS Validation system. Validates MD5 Hash on critical
+# configuration files. 
+#
+# Author: Jeff Mootrey
+# Release: 20180302
+#
+#########################################################
 
 class Handler:
 
@@ -66,7 +76,7 @@ class Handler:
             return False
         self.stdin, self.ecmd5, self.stderr = self.s.exec_command("md5sum /opt/eConnect/App/econapp | cut -d ' ' -f1 | tr -d %'\n'")
         self.stdin2, self.dbmd5, self.stderr2 = self.s.exec_command("md5sum /opt/database/database.tgz | cut -d ' ' -f1 | tr -d %'\n'")
-        self.stdin3, self.ver, self.stderr3 = self.s.exec_command("/opt/eConnect/scripts/misc/ecms-versions.sh")
+        self.stdin3, self.ver, self.stderr3 = self.s.exec_command("sudo /opt/eConnect/scripts/misc/ecms-versions.sh")
         while not self.ecmd5.channel.exit_status_ready() or not self.dbmd5.channel.exit_status_ready() or not self.ver.channel.exit_status_ready():
             time.sleep(.1)    
         if self.ecmd5.channel.recv_exit_status() == 0:
@@ -244,6 +254,12 @@ def devent(self, *args):
     return True
 
 if __name__ == '__main__':
+    # capture signals
+    def sig_handle(signal, frame):
+        window.connect("delete-event", Gtk.main_quit)
+        sys.exit(0)
+    signal.signal(signal.SIGINT, sig_handle)
+    # Build UI
     builder = Gtk.Builder()
     builder.add_from_file('main.glade')
     cfg = configparser.ConfigParser()
