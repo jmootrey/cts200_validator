@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import signal
+import os
 import sys
 import sqlite3
 import subprocess
@@ -174,7 +175,7 @@ class Handler:
         else:
             dbdata = self.get_local_data(self.customer_text, self.dbfile)
             if dbdata:
-                self.ip_entry.set_text(dbdata[1])
+                self.ip_entry.set_text(dbdata[1]+' | Hex: '+dbdata[4])
                 self.c = 0
                 while True:
                     self.result = self.check_socket(dbdata[1])
@@ -254,6 +255,7 @@ def devent(self, *args):
     return True
 
 if __name__ == '__main__':
+    os.chdir('/home/econnect/cts200_validator')
     # capture signals
     def sig_handle(signal, frame):
         window.connect("delete-event", Gtk.main_quit)
