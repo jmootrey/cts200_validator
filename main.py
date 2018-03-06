@@ -23,6 +23,9 @@ from gi.repository import Gtk, Gdk
 #
 #########################################################
 
+
+
+# Signal Handler
 class Handler:
 
     def __init__(self):
@@ -54,6 +57,7 @@ class Handler:
     def customer_entry_changed(self, *args):
         self.validate_button.set_sensitive(False)
     
+    # Validates prescence of CTS device by checking for open ssh port
     def check_socket(self, ip):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.settimeout(2)
@@ -78,6 +82,7 @@ class Handler:
         self.stdin, self.ecmd5, self.stderr = self.s.exec_command("md5sum /opt/eConnect/App/econapp | cut -d ' ' -f1 | tr -d %'\n'")
         self.stdin2, self.dbmd5, self.stderr2 = self.s.exec_command("md5sum /opt/database/database.tgz | cut -d ' ' -f1 | tr -d %'\n'")
         self.stdin3, self.ver, self.stderr3 = self.s.exec_command("sudo /opt/eConnect/scripts/misc/ecms-versions.sh")
+        # Paramiko is async. Wait for ready state before processing data. 
         while not self.ecmd5.channel.exit_status_ready() or not self.dbmd5.channel.exit_status_ready() or not self.ver.channel.exit_status_ready():
             time.sleep(.1)    
         if self.ecmd5.channel.recv_exit_status() == 0:
