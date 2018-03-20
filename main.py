@@ -19,8 +19,10 @@ from gi.repository import Gtk, Gdk
 # configuration files. 
 #
 # Author: Jeff Mootrey
+# Release 20180321
+#  Added run mode config.
 # Release: 20180302
-#
+#  Initial Release
 #########################################################
 
 
@@ -133,6 +135,8 @@ class Handler:
                 self.version_colorbox.set_rgba(Gdk.RGBA(0,0.8,0,1))
             if 'Error' not in self.remote_data.values():
                 if self.validate(self.remote_data):
+                    #commit run mode data, this is appllied on the next power cycle.
+                    self.config_runmode(self.customer_entry, self.dbfile)
                     #commit to record
                     self.create_record(self.remote_data)
                     self.message_dialog.show_all()
@@ -146,6 +150,28 @@ class Handler:
                 return
         else:
             return
+
+    def config_runmode(self, customer, database):
+        self.keys = ['customer', 'bm', 'vlan', 'vip', 'vnet', 'vgw', 'vdns', 'capf', 'wd']
+        self.data = list(self.get_local_data(self.customer_text, self.dbfile, 'run_mode'))
+        try:
+            self.s = paramiko.SSHClient()
+            self.s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            self.s.connect(hostname=dbdata[1], port=22, username='emteq',
+                password='Q3tm36170')
+        except:
+            self.error_message('Secure Shell Connection Error')
+            return False
+        for self.k, self.v in zip(self.keys, self.data):
+            if self.k != 'customer' and self.v:
+                self.stdin, self.stdout, self.stderr = self.s.exec_command("sudo /opt/testapps/eeprom/ta_eeprom {} {}".format(self.k, self.v))
+                while not self.stdout.channel.exit_status_ready():
+                    time.sleep(.1)    
+                if self.stdout.channel.recv_exit_status() != 0:
+                    self.error_message('Unable to set {}'.format(self.k))
+                    return False
+        return True
+
     def validate(self, data):
         if data['ecmd5'] == dbdata[2]:
             if data['dbmd5'] == dbdata[3]:
@@ -178,7 +204,7 @@ class Handler:
         elif not self.lot_text:
             self.error_message('Lot Number Required')
         else:
-            dbdata = self.get_local_data(self.customer_text, self.dbfile)
+            dbdata = self.get_local_data(self.customer_text, self.dbfile, 'cts')
             if dbdata:
                 self.ip_entry.set_text(dbdata[1]+' | Hex: '+dbdata[4])
                 self.c = 0
@@ -197,17 +223,27 @@ class Handler:
                 self.ip_entry.set_text('')
                 self.error_message('Unable To Locate Customer')
 
-    def get_local_data(self, customer, database):
+    def get_local_data(self, customer, database, table):
         self.sq_conn = sqlite3.connect(str(database))
         self.c = self.sq_conn.cursor()
-        try:
-            self.c.execute("SELECT * FROM cts WHERE customer=?;", (customer, ))
-            self.data = self.c.fetchone()
-            return self.data
-        except:
-            self.error_message('Unable To Locate Customer In Database')
-            self.sq_conn.close()
-            return False
+        if table == 'cts':
+            try:
+                self.c.execute("SELECT * FROM cts WHERE customer=?;", (customer, ))
+                self.data = self.c.fetchone()
+                return self.data
+            except:
+                self.error_message('Unable To Locate Customer In Database')
+                self.sq_conn.close()
+                return False
+        elif table == 'run_mode':
+            try:
+                self.c.execute("SELECT * FROM run_mode WHERE customer=?;", (customer, ))
+                self.data = self.c.fetchone()
+                return self.data
+            except:
+                self.error_message('Unable To Locate Customer In Database')
+                self.sq_conn.close()
+                return False
 
     def create_record(self, data):
         self.tstamp = time.strftime("%Y%m%d.%H%M")
@@ -260,7 +296,7 @@ def devent(self, *args):
     return True
 
 if __name__ == '__main__':
-    os.chdir('/home/econnect/cts200_validator')
+   # os.chdir('/home/econnect/cts200_validator')
     # capture signals
     def sig_handle(signal, frame):
         window.connect("delete-event", Gtk.main_quit)
