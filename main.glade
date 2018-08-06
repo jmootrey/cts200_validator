@@ -13,7 +13,7 @@
     <property name="height_request">300</property>
     <property name="can_focus">False</property>
     <property name="border_width">0</property>
-    <property name="title" translatable="yes">CTS200 Validator</property>
+    <property name="title" translatable="yes">CWR45X | CTS  Validation</property>
     <property name="resizable">False</property>
     <child>
       <object class="GtkBox" id="main_box">
@@ -149,33 +149,50 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButtonBox" id="buttonbox1">
+                  <object class="GtkBox" id="box1">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="halign">end</property>
-                    <property name="margin_right">12</property>
-                    <property name="margin_bottom">1</property>
-                    <property name="layout_style">end</property>
                     <child>
-                      <object class="GtkButton" id="scan_button">
-                        <property name="label" translatable="yes">SCAN</property>
+                      <object class="GtkLabel" id="part_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
-                        <property name="resize_mode">immediate</property>
-                        <signal name="clicked" handler="scan_clicked" swapped="no"/>
+                        <property name="can_focus">False</property>
+                        <property name="margin_right">10</property>
+                        <property name="label" translatable="yes">      Part: </property>
+                        <property name="justify">right</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="padding">10</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkComboBox" id="part_entry">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="model">customer_model</property>
+                        <property name="has_entry">True</property>
+                        <property name="entry_text_column">0</property>
+                        <signal name="changed" handler="part_changed" swapped="no"/>
+                        <child internal-child="entry">
+                          <object class="GtkEntry" id="combobox-entry5">
+                            <property name="can_focus">True</property>
+                          </object>
+                        </child>
                       </object>
                       <packing>
                         <property name="expand">True</property>
                         <property name="fill">True</property>
                         <property name="padding">10</property>
-                        <property name="position">2</property>
+                        <property name="position">1</property>
                       </packing>
                     </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>
-                    <property name="fill">False</property>
+                    <property name="fill">True</property>
+                    <property name="padding">1</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
@@ -199,7 +216,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkComboBox" id="customer_entry1">
+                      <object class="GtkComboBox" id="customer_entry">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="model">customer_model</property>
@@ -222,7 +239,7 @@
                   </object>
                   <packing>
                     <property name="expand">False</property>
-                    <property name="fill">True</property>
+                    <property name="fill">False</property>
                     <property name="position">2</property>
                   </packing>
                 </child>
@@ -326,7 +343,7 @@
                       <object class="GtkLabel" id="dbc_label">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">DB Connection:</property>
+                        <property name="label" translatable="yes">DB Connection:      </property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -340,7 +357,7 @@
                         <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="margin_left">20</property>
+                        <property name="margin_left">7</property>
                         <property name="rgba">rgb(164,0,0)</property>
                       </object>
                       <packing>
@@ -365,7 +382,7 @@
                       <object class="GtkLabel" id="ctsc_label">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">CTS Connection:</property>
+                        <property name="label" translatable="yes">EUT  Connection:    </property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -379,7 +396,7 @@
                         <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="margin_left">15</property>
+                        <property name="margin_left">3</property>
                         <property name="rgba">rgb(164,0,0)</property>
                       </object>
                       <packing>
@@ -519,13 +536,40 @@
                     <property name="spacing">10</property>
                     <property name="layout_style">start</property>
                     <child>
-                      <object class="GtkButton" id="validate_button">
-                        <property name="label" translatable="yes">VALIDATE</property>
+                      <object class="GtkGrid" id="grid2">
                         <property name="visible">True</property>
-                        <property name="sensitive">False</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
-                        <signal name="clicked" handler="validate_clicked" swapped="no"/>
+                        <property name="can_focus">False</property>
+                        <child>
+                          <object class="GtkButton" id="validate_button">
+                            <property name="label" translatable="yes">VALIDATE</property>
+                            <property name="visible">True</property>
+                            <property name="sensitive">False</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <signal name="clicked" handler="validate_clicked" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="left_attach">2</property>
+                            <property name="top_attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="scan_button">
+                            <property name="label" translatable="yes">SCAN</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="resize_mode">immediate</property>
+                            <signal name="clicked" handler="scan_clicked" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
                       </object>
                       <packing>
                         <property name="expand">True</property>

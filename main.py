@@ -19,6 +19,8 @@ from gi.repository import Gtk, Gdk
 # configuration files. 
 #
 # Author: Jeff Mootrey
+# Release 20180807
+#  Including CWR45x
 # Release 20180321
 #  Added run mode config.
 # Release: 20180302
