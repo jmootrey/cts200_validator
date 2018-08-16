@@ -1,8 +1,0 @@
-[Record]
-ecmd5 = 7cec90339c7183ab794872087b28730c
-customer = pilatus
-timestamp = 20180215.1034
-dbmd5 = d3436508da5fead27f8fca4dc322daad
-version = ['Start scripts version....... 0.2.8\n', 'SWID BLOCK:\n', 'Header............ JNBLAtoL9jIZ2R9q0ph54COTYVyan3LF90ekLUTLfr0bYV4D9hEh3Zk88Wj055gi\x01\n', 'Protocol version.. 1\n', 'Force upgrade..... 1\n', 'Image blocks...... 12359680\n', 'Part Number....... DSK_201212\n', 'Version........... 1.0.0\n', '\n', 'SOFTWARE VERSIONS:\n', 'Root File system version.... 201610041007\n', 'Boot File system version.... 201504061443\n', 'eConApp version............. 0.66\n', 'tsApp version............... 0.2.9\n', 'Test Apps version........... 0.2.12\n', 'Kernel version.............. 38399\n', 'U-boot version.............. 45274\n', '09:49:53.0565: I2C bus 1 open error -1\n', '09:49:53.0568: I2C bus 1 open failure\n', 'CPLD version................ FAIL\n', 'Database version............ 3.1.1.0\n']
-lot = 321
-
